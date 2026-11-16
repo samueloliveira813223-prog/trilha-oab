@@ -1,0 +1,837 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Trilha OAB</title>
+<meta name="description" content="Estudo diário para a 1ª fase do Exame de Ordem: 15 a 20 minutos por dia, com questões e ofensiva.">
+<meta name="theme-color" content="#1F3FBF">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%231F3FBF'/><rect x='12' y='6' width='8' height='16' rx='2' fill='%23FFD84A'/><path d='M12 22l4-3 4 3v4l-4-3-4 3z' fill='%23C0271D'/></svg>">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700;800&display=swap">
+<style>
+/* Trilha OAB
+   Layout: uma coluna no celular com abas embaixo; no computador, trilha à esquerda e painel à direita.
+   Cores: azul de caneta esferográfica, amarelo de marca-texto, vermelho da carteira da Ordem. */
+:root{
+  --bg:#F2F4F9; --surface:#FFFFFF; --surface2:#E8ECF5; --ink:#141B2D; --muted:#586179; --line:#D5DBE8;
+  --pen:#1F3FBF; --pen-ink:#FFFFFF; --pen-soft:#E3E9FF;
+  --mark:#FFD84A; --mark-ink:#2A2200;
+  --card:#C0271D;
+  --ok:#17794B; --ok-soft:#DDF3E7; --err:#B3261E; --err-soft:#FBE4E1;
+  --display:"Bricolage Grotesque","Figtree",system-ui,sans-serif;
+  --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r:16px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0E1321; --surface:#171F33; --surface2:#212B45; --ink:#E9EDF7; --muted:#9BA5BE; --line:#2C3754;
+  --pen:#8AA0FF; --pen-ink:#0B1024; --pen-soft:#222E57;
+  --mark:#FFD84A; --mark-ink:#2A2200;
+  --card:#FF6F61;
+  --ok:#55C990; --ok-soft:#143325; --err:#FF8A7A; --err-soft:#3A1917;
+  color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0E1321; --surface:#171F33; --surface2:#212B45; --ink:#E9EDF7; --muted:#9BA5BE; --line:#2C3754;
+  --pen:#8AA0FF; --pen-ink:#0B1024; --pen-soft:#222E57;
+  --mark:#FFD84A; --mark-ink:#2A2200;
+  --card:#FF6F61;
+  --ok:#55C990; --ok-soft:#143325; --err:#FF8A7A; --err-soft:#3A1917;
+  color-scheme:dark }
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;margin:0;
+  padding-top:env(safe-area-inset-top,0px)}
+h1,h2,h3{font-family:var(--display);line-height:1.15;margin:0;text-wrap:balance}
+p{margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+input{font:inherit}
+a{color:var(--pen)}
+img{max-width:100%}
+[hidden]{display:none!important}
+:focus-visible{outline:3px solid var(--pen);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+
+/* ===== carregando / login ===== */
+.capa{min-height:100dvh;display:grid;place-items:center;padding-block:28px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.caixa{width:100%;max-width:420px;display:flex;flex-direction:column;gap:18px}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:800;font-size:1.7rem}
+.logo i{display:inline-block;width:18px;height:28px;border-radius:4px;background:var(--card);transform:rotate(-8deg)}
+.cartao{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:14px}
+.troca{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:var(--surface2);padding:4px;border-radius:12px}
+.troca button{border:0;background:none;padding:9px;border-radius:9px;font-weight:700;color:var(--muted)}
+.troca button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+label{display:flex;flex-direction:column;gap:5px;font-size:.85rem;font-weight:700;color:var(--muted)}
+label input{border:2px solid var(--line);background:var(--bg);color:var(--ink);border-radius:11px;padding:12px 13px;font-size:1rem;font-weight:500}
+label input:focus{border-color:var(--pen);outline:none}
+.erro{background:var(--err-soft);border:1px solid var(--err);color:var(--ink);border-radius:11px;padding:10px 13px;font-size:.88rem}
+.ou{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.8rem;font-weight:700}
+.ou::before,.ou::after{content:"";flex:1;height:1px;background:var(--line)}
+.btn-google{display:flex;align-items:center;justify-content:center;gap:10px;border:2px solid var(--line);background:var(--surface);border-radius:13px;padding:12px;font-weight:700}
+.btn-google svg{width:19px;height:19px;flex:none}
+.visitante{background:none;border:0;color:var(--muted);text-decoration:underline;font-size:.86rem;padding:4px}
+.sobre{color:var(--muted);font-size:.85rem;text-align:center}
+
+/* ===== topo ===== */
+.topo{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--surface);border-bottom:1px solid var(--line)}
+.topo-in{max-width:1080px;margin:0 auto;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.marca{font-family:var(--display);font-weight:800;font-size:1.2rem;display:flex;align-items:center;gap:8px}
+.marca i{display:inline-block;width:13px;height:21px;border-radius:3px;background:var(--card);transform:rotate(-8deg)}
+.stats{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap}
+.pill{display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:var(--surface2);font-weight:700;font-size:.9rem;white-space:nowrap}
+.pill small{font-weight:600;color:var(--muted);font-size:.78rem}
+.abas-topo{display:none;gap:4px}
+.aba{border:0;background:none;padding:8px 12px;border-radius:10px;font-weight:700;color:var(--muted)}
+.aba[aria-current="page"]{background:var(--pen-soft);color:var(--pen)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+
+/* ===== corpo ===== */
+.pagina{max-width:1080px;margin:0 auto;padding-block:20px 104px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.grade{display:grid;gap:20px;grid-template-columns:minmax(0,1fr)}
+.col{display:flex;flex-direction:column;gap:20px;min-width:0}
+.bloco{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.rotulo{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+.hoje{background:var(--pen);color:var(--pen-ink);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:12px}
+.hoje .rotulo{color:inherit;opacity:.82}
+.hoje h1{font-size:clamp(1.4rem,4.5vw,1.9rem)}
+.hoje p{opacity:.92}
+.hoje.feito{background:var(--ok-soft);color:var(--ink);border:1px solid var(--ok)}
+.barra{height:10px;border-radius:999px;background:color-mix(in srgb,currentColor 22%,transparent);overflow:hidden}
+.barra b{display:block;height:100%;background:var(--mark);border-radius:999px;transition:width .3s}
+.btn{border:0;border-radius:14px;padding:14px 18px;font-weight:800;font-size:1rem;background:var(--pen);color:var(--pen-ink);box-shadow:0 4px 0 color-mix(in srgb,var(--pen) 60%,#000)}
+.btn:active{transform:translateY(2px);box-shadow:0 2px 0 color-mix(in srgb,var(--pen) 60%,#000)}
+.btn.claro{background:var(--mark);color:var(--mark-ink);box-shadow:0 4px 0 #B89400}
+.btn.sec{background:var(--surface2);color:var(--ink);box-shadow:0 4px 0 var(--line)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btn.largo{width:100%}
+
+.semana{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-top:12px}
+.dia-s{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:.75rem;font-weight:700;color:var(--muted)}
+.dia-s span{width:100%;max-width:38px;aspect-ratio:1;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:.95rem}
+.dia-s.ok span{background:var(--mark);border-color:var(--mark);color:var(--mark-ink)}
+.dia-s.hj span{border-color:var(--pen)}
+
+.trilha{display:flex;flex-direction:column;margin-top:14px}
+.no{display:grid;grid-template-columns:52px minmax(0,1fr);gap:14px;align-items:center;position:relative;padding-block:10px;background:none;border:0;text-align:left;width:100%;border-radius:12px}
+.no:not(:last-child)::after{content:"";position:absolute;left:25px;top:58px;bottom:-10px;width:3px;background:var(--line);border-radius:2px}
+.no.ok:not(:last-child)::after{background:var(--ok)}
+.bola{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:800;background:var(--surface2);color:var(--muted);border:3px solid var(--line);position:relative;z-index:1}
+.no.ok .bola{background:var(--ok);border-color:var(--ok);color:#fff}
+.no.vez .bola{background:var(--mark);border-color:var(--pen);color:var(--mark-ink);box-shadow:0 0 0 5px var(--pen-soft)}
+.no h3{font-size:1rem;font-family:var(--body);font-weight:700}
+.no p{font-size:.86rem;color:var(--muted)}
+.no[disabled]{cursor:default}
+.no[disabled] h3{color:var(--muted)}
+.fim-trilha{margin-top:8px;padding:12px 14px;border:1px dashed var(--line);border-radius:12px;color:var(--muted);font-size:.9rem}
+.ver-mais{margin-top:10px;width:100%;border:1px solid var(--line);background:var(--surface2);border-radius:12px;padding:10px;font-weight:700;color:var(--muted)}
+
+.nivel-linha{display:flex;justify-content:space-between;gap:8px;align-items:baseline;margin-bottom:8px}
+.nivel-linha h2{font-size:1.25rem}
+.barra.xp{background:var(--surface2)}
+.barra.xp b{background:var(--pen)}
+.conq{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px;margin-top:12px}
+.selo{border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:4px;opacity:.55}
+.selo.ganho{opacity:1;background:var(--pen-soft);border-color:var(--pen)}
+.selo b{font-size:1.5rem;line-height:1}
+.selo strong{font-size:.9rem}
+.selo small{color:var(--muted);font-size:.78rem}
+.numeros{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-top:12px}
+.numero{background:var(--surface2);border-radius:12px;padding:12px}
+.numero b{font-family:var(--display);font-size:1.5rem;display:block}
+.numero small{color:var(--muted)}
+
+/* ===== aula ===== */
+.aula{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.aula-topo{display:flex;align-items:center;gap:12px}
+.aula-topo .barra{flex:1;background:var(--surface2)}
+.aula-topo .barra b{background:var(--ok)}
+.sair{border:0;background:none;font-weight:700;color:var(--muted);padding:6px 4px}
+.ponto{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.ponto mark{background:var(--mark);color:var(--mark-ink);padding:1px 6px;border-radius:5px;font-weight:700}
+.enun{font-size:1.1rem;font-weight:600}
+.opcoes{display:flex;flex-direction:column;gap:10px}
+.opc{display:grid;grid-template-columns:32px minmax(0,1fr);gap:12px;align-items:start;text-align:left;border:2px solid var(--line);background:var(--surface);border-radius:14px;padding:12px 14px}
+.opc i{font-style:normal;font-weight:800;width:32px;height:32px;border-radius:9px;border:2px solid var(--line);display:grid;place-items:center}
+.opc[aria-pressed="true"]{border-color:var(--pen);background:var(--pen-soft)}
+.opc[aria-pressed="true"] i{background:var(--pen);border-color:var(--pen);color:var(--pen-ink)}
+.opc.certa{border-color:var(--ok);background:var(--ok-soft)}
+.opc.certa i{background:var(--ok);border-color:var(--ok);color:#fff}
+.opc.errada{border-color:var(--err);background:var(--err-soft)}
+.opc.errada i{background:var(--err);border-color:var(--err);color:#fff}
+.retorno{border-radius:14px;padding:14px 16px}
+.retorno.bom{background:var(--ok-soft);border:1px solid var(--ok)}
+.retorno.ruim{background:var(--err-soft);border:1px solid var(--err)}
+.retorno h3{font-size:1.05rem;margin-bottom:4px}
+.festa{text-align:center;display:flex;flex-direction:column;gap:14px;align-items:center;padding-block:12px}
+.festa h1{font-size:clamp(1.8rem,6vw,2.6rem)}
+.ganhos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:100%}
+.aviso{font-size:.86rem;color:var(--muted)}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;font-weight:700;padding:4px 10px;border-radius:999px;background:var(--surface2);color:var(--muted)}
+.chip.ok{background:var(--ok-soft);color:var(--ok)}
+textarea{width:100%;min-height:92px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:500 .85rem/1.4 ui-monospace,Menlo,Consolas,monospace;padding:10px;resize:vertical}
+.linha-btn{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.conta-linha{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px}
+
+.abas-baixo{position:fixed;left:0;right:0;bottom:0;z-index:9;background:var(--surface);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(3,1fr);padding-top:6px;padding-bottom:calc(6px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.abas-baixo .aba{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.78rem}
+.abas-baixo .aba b{font-size:1.25rem;line-height:1}
+
+.marcador{position:fixed;top:-30px;width:12px;height:26px;border-radius:3px;z-index:20;pointer-events:none;animation:cai 1.8s ease-in forwards}
+@keyframes cai{to{transform:translateY(110vh) rotate(540deg);opacity:.2}}
+.girando{animation:gira 1s linear infinite;display:inline-block}
+@keyframes gira{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion: reduce){ .marcador{display:none} .barra b{transition:none} .girando{animation:none} }
+
+@media (min-width:860px){
+  .abas-topo{display:flex}
+  .abas-baixo{display:none}
+  .pagina{padding-block:28px 48px}
+  .grade.duas{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)}
+}
+</style>
+</head>
+<body>
+
+<div id="capa" class="capa">
+  <div class="caixa">
+    <div class="logo"><i></i>Trilha OAB</div>
+    <p class="sobre" id="capa-msg"><span class="girando">◌</span> Carregando…</p>
+  </div>
+</div>
+
+<div id="app-topo" hidden>
+  <header class="topo">
+    <div class="topo-in">
+      <div class="marca"><i></i>Trilha OAB</div>
+      <nav class="abas-topo" aria-label="Seções">
+        <button class="aba" data-aba="trilha">Trilha</button>
+        <button class="aba" data-aba="conquistas">Conquistas</button>
+        <button class="aba" data-aba="conta">Conta</button>
+      </nav>
+      <div class="stats">
+        <div class="pill" title="Dias seguidos de estudo">🔥 <span class="num" id="s-ofensiva">0</span> <small>dias</small></div>
+        <div class="pill" title="Pontos de experiência">⭐ <span class="num" id="s-xp">0</span> <small>XP</small></div>
+        <div class="pill" title="Dias até a prova">📅 <span class="num" id="s-prova">0</span> <small>p/ prova</small></div>
+      </div>
+    </div>
+  </header>
+  <main class="pagina" id="app"></main>
+  <nav class="abas-baixo" aria-label="Seções">
+    <button class="aba" data-aba="trilha"><b>🧭</b>Trilha</button>
+    <button class="aba" data-aba="conquistas"><b>🏅</b>Conquistas</button>
+    <button class="aba" data-aba="conta"><b>👤</b>Conta</button>
+  </nav>
+</div>
+
+<script src="conteudo.js"></script>
+<script type="module">
+let initializeApp, getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+    signInWithPopup, GoogleAuthProvider, signOut, sendPasswordResetEmail, updateProfile,
+    getFirestore, doc, getDoc, setDoc;
+let temFirebase = true;
+try{
+  const [a,b,c] = await Promise.all([
+    import("https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js"),
+    import("https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js"),
+    import("https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js")
+  ]);
+  ({ initializeApp } = a);
+  ({ getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+     signInWithPopup, GoogleAuthProvider, signOut, sendPasswordResetEmail, updateProfile } = b);
+  ({ getFirestore, doc, getDoc, setDoc } = c);
+}catch(e){ temFirebase = false; }
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCzGWVTVg3txSjW01UkFTKe7F3gVOPGzKg",
+  authDomain: "trilha-oab.firebaseapp.com",
+  projectId: "trilha-oab",
+  storageBucket: "trilha-oab.firebasestorage.app",
+  messagingSenderId: "791886529353",
+  appId: "1:791886529353:web:cf063e165487ea8ca0d098"
+};
+
+/* ===================== DADOS DA PROVA ===================== */
+const PROVA = "2027-09-12";          // 1ª fase do 50º Exame (calendário da OAB, sujeito a alteração)
+const INICIO = "2026-11-17";         // primeiro dia da trilha
+const PESOS = {                      // questões por disciplina na 1ª fase (80 no total)
+  "Ética Profissional":8, "Direito Civil":6, "Direito Processual Civil":6, "Direito Constitucional":6,
+  "Direito Penal":6, "Direito Processual Penal":6, "Direito Administrativo":5, "Direito do Trabalho":5,
+  "Direito Processual do Trabalho":5, "Direito Tributário":5, "Direito Empresarial":4,
+  "Direitos Humanos":2, "Direito Internacional":2, "Estatuto da Criança e do Adolescente":2,
+  "Direito Ambiental":2, "Direito do Consumidor":2, "Filosofia do Direito":2,
+  "Direito Previdenciário":2, "Direito Financeiro":2, "Direito Eleitoral":2
+};
+const NIVEIS = [[0,"Calouro"],[100,"Estagiário"],[300,"Monitor"],[700,"Bacharel"],[1500,"Examinando"],[3000,"Vermelhinha na mão"]];
+const CONQ = [
+  {id:"primeiro",e:"👣",n:"Primeiro passo",d:"Conclua o primeiro dia",ok:s=>nFeitos(s)>=1},
+  {id:"tres",e:"🔥",n:"Três em linha",d:"3 dias seguidos",ok:s=>s.melhor>=3},
+  {id:"semana",e:"📆",n:"Semana cheia",d:"7 dias seguidos",ok:s=>s.melhor>=7},
+  {id:"mes",e:"🛡️",n:"Mês de ferro",d:"30 dias seguidos",ok:s=>s.melhor>=30},
+  {id:"gabarito",e:"🎯",n:"Gabaritou",d:"Um dia sem errar nenhuma",ok:s=>s.gabaritou>0},
+  {id:"cem",e:"💯",n:"Cem questões",d:"Responda 100 questões",ok:s=>s.respondidas>=100},
+  {id:"quinhentas",e:"🏛️",n:"Quinhentas",d:"Responda 500 questões",ok:s=>s.respondidas>=500},
+  {id:"metade",e:"⚖️",n:"Meio caminho",d:"Conclua 50 dias",ok:s=>nFeitos(s)>=50}
+];
+
+/* ===================== TRILHA (gerada aqui, sem arquivo extra) ===================== */
+function iso(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0") }
+function dataDe(s){ const p=s.split("-"); return new Date(+p[0],+p[1]-1,+p[2]) }
+function somar(s,n){ const d=dataDe(s); d.setDate(d.getDate()+n); return iso(d) }
+function hoje(){ return iso(new Date()) }
+function diasEntre(a,b){ return Math.round((dataDe(b)-dataDe(a))/864e5) }
+function diasAte(s){ return Math.max(0,diasEntre(hoje(),s)) }
+
+function repartir(total,pesos){
+  const soma=Object.values(pesos).reduce((a,b)=>a+b,0), bruto={}, base={};
+  for(const m in pesos){ bruto[m]=total*pesos[m]/soma; base[m]=Math.floor(bruto[m]) }
+  let faltam=total-Object.values(base).reduce((a,b)=>a+b,0);
+  Object.keys(bruto).sort((a,b)=>(bruto[b]-base[b])-(bruto[a]-base[a])).slice(0,faltam).forEach(m=>base[m]++);
+  return base;
+}
+function intercalar(vagas){
+  const atual={}, total=Object.values(vagas).reduce((a,b)=>a+b,0), seq=[];
+  for(const m in vagas) atual[m]=0;
+  for(let i=0;i<total;i++){
+    for(const m in vagas) atual[m]+=vagas[m];
+    let esc=null; for(const m in atual) if(esc===null||atual[m]>atual[esc]) esc=m;
+    atual[esc]-=total; seq.push(esc);
+  }
+  return seq;
+}
+const TRILHA = (function(){
+  const totalDias = diasEntre(INICIO,PROVA);              // até a véspera
+  const f3 = Math.max(0,totalDias-28), f2 = Math.max(0,f3-60);
+  const dias=[];
+  for(let i=0;i<totalDias;i++){
+    const d=somar(INICIO,i), dow=dataDe(d).getDay();
+    dias.push({d, fase: i>=f3?3:(i>=f2?2:1), domingo:dow===0});
+  }
+  const uteis1=dias.filter(x=>x.fase===1&&!x.domingo).length;
+  const uteis2=dias.filter(x=>x.fase===2&&!x.domingo).length;
+  const seq1=uteis1?intercalar(repartir(uteis1,PESOS)):[];
+  const seq2=uteis2?intercalar(repartir(uteis2,PESOS)):[];
+  let i1=0,i2=0; const c1={},c2={};
+  return dias.map((x,n)=>{
+    const base={n, data:x.d, fase:x.fase};
+    if(x.domingo) return {...base, tipo:"revisao"};
+    if(x.fase===1){ const m=seq1[i1++]; c1[m]=(c1[m]||0)+1; return {...base,tipo:"aula",materia:m,slot:c1[m]} }
+    if(x.fase===2){ const m=seq2[i2++]; c2[m]=(c2[m]||0)+1; return {...base,tipo:"questoes",materia:m,rodada:c2[m]} }
+    return {...base, tipo:"simulado"};
+  });
+})();
+const TOTAL_DIAS = TRILHA.length;
+function aulaDe(materia,slot){ const a=(window.CONTEUDO||{})[materia]; return a&&a[slot-1] ? a[slot-1] : null }
+function temAula(item){ return item && item.tipo==="aula" && !!aulaDe(item.materia,item.slot) }
+
+/* ===================== ESTADO ===================== */
+const CHAVE="trilha-oab-v2";
+function novo(){ return {v:2,xp:0,feitos:{},datas:[],ofensiva:0,melhor:0,ultima:"",respondidas:0,acertos:0,gabaritou:0,conq:[],atual:null,atualizado:0} }
+function nFeitos(s){ return Object.keys(s.feitos||{}).length }
+function valido(s){ return s&&(s.v===1||s.v===2)&&typeof s.xp==="number"&&s.feitos&&Array.isArray(s.datas) }
+function maisAvancado(a,b){
+  const fa=nFeitos(a), fb=nFeitos(b);
+  if(fa!==fb) return fa>fb;
+  if(a.xp!==b.xp) return a.xp>b.xp;
+  return (a.atualizado||0)>(b.atualizado||0);
+}
+let estado=novo(), aba="trilha", semLocal=false, usuario=null, visitante=false, mostrarTudo=false;
+try{ const b=localStorage.getItem(CHAVE); if(b){ const p=JSON.parse(b); if(valido(p)) estado=p } }catch(e){ semLocal=true }
+
+let app=null, db=null, auth=null;
+let gravando=false, pendente=false, salvoNaConta=false, erroNuvem="";
+function salvar(){
+  estado.atualizado=Date.now();
+  try{ localStorage.setItem(CHAVE,JSON.stringify(estado)); semLocal=false }catch(e){ semLocal=true }
+  gravarNuvem();
+}
+let timerGravar=null;
+function gravarNuvem(){
+  if(!usuario||!db) return;
+  clearTimeout(timerGravar);
+  timerGravar=setTimeout(async()=>{
+    if(gravando){ pendente=true; return }
+    gravando=true;
+    try{
+      await setDoc(doc(db,"usuarios",usuario.uid),{progresso:JSON.stringify(estado),atualizado:estado.atualizado});
+      salvoNaConta=true; erroNuvem="";
+    }catch(e){ salvoNaConta=false; erroNuvem=e.code||"erro" }
+    gravando=false;
+    if(pendente){ pendente=false; gravarNuvem() }
+    atualizarChip();
+  },700);
+}
+async function carregarNuvem(){
+  if(!usuario||!db) return;
+  try{
+    const snap=await getDoc(doc(db,"usuarios",usuario.uid));
+    if(snap.exists()){
+      const d=snap.data();
+      if(d&&typeof d.progresso==="string"){
+        const remoto=JSON.parse(d.progresso);
+        if(valido(remoto)&&maisAvancado(remoto,estado)){
+          estado=remoto;
+          try{ localStorage.setItem(CHAVE,d.progresso) }catch(e){}
+        }
+      }
+    }
+    salvoNaConta=true;
+  }catch(e){ salvoNaConta=false; erroNuvem=e.code||"erro" }
+  gravarNuvem();
+}
+
+/* ===================== UTILIDADES ===================== */
+const el=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function ofensivaAtual(){ return (estado.ultima===hoje()||estado.ultima===somar(hoje(),-1))?estado.ofensiva:0 }
+function nivel(xp){ let i=0; NIVEIS.forEach((n,k)=>{ if(xp>=n[0]) i=k }); const p=NIVEIS[i+1]; return {n:i+1,nome:NIVEIS[i][1],base:NIVEIS[i][0],prox:p?p[0]:null} }
+function diaAtualIndice(){
+  const passados=Math.max(0,diasEntre(INICIO,hoje()));
+  let i=0; while(i<TOTAL_DIAS&&estado.feitos[i]) i++;
+  return Math.min(i,Math.max(0,Math.min(passados,TOTAL_DIAS-1)),TOTAL_DIAS-1)===i?i:i;
+}
+function proximoDia(){ let i=0; while(i<TOTAL_DIAS&&estado.feitos[i]) i++; return Math.min(i,TOTAL_DIAS-1) }
+
+/* ===================== TELA DE ENTRADA ===================== */
+let modoEntrada="entrar", msgErro="", carregandoAuth=false;
+function desenharCapa(){
+  const c=el("capa");
+  c.hidden=false; el("app-topo").hidden=true;
+  c.innerHTML=`<div class="caixa">
+    <div class="logo"><i></i>Trilha OAB</div>
+    <p class="sobre">15 a 20 minutos por dia até a 1ª fase do Exame de Ordem. Seu progresso fica guardado na sua conta.</p>
+    <div class="cartao">
+      <div class="troca">
+        <button id="t-entrar" aria-pressed="${modoEntrada==="entrar"}">Entrar</button>
+        <button id="t-criar" aria-pressed="${modoEntrada==="criar"}">Criar conta</button>
+      </div>
+      ${msgErro?`<p class="erro" role="alert">${esc(msgErro)}</p>`:""}
+      <form id="form-auth" style="display:flex;flex-direction:column;gap:12px">
+        ${modoEntrada==="criar"?`<label for="i-nome">Seu nome<input id="i-nome" autocomplete="name" required></label>`:""}
+        <label for="i-email">E-mail<input id="i-email" type="email" autocomplete="email" required></label>
+        <label for="i-senha">Senha<input id="i-senha" type="password" autocomplete="${modoEntrada==="criar"?"new-password":"current-password"}" minlength="6" required></label>
+        <button class="btn largo" type="submit" ${carregandoAuth?"disabled":""}>${carregandoAuth?"Aguarde…":(modoEntrada==="criar"?"Criar minha conta":"Entrar")}</button>
+      </form>
+      ${modoEntrada==="entrar"?`<button class="visitante" id="b-esqueci">Esqueci minha senha</button>`:""}
+      <div class="ou">ou</div>
+      <button class="btn-google" id="b-google" ${carregandoAuth?"disabled":""}>
+        <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.5l6.7-6.7C35.6 2.6 30.2.5 24 .5 14.6.5 6.5 5.9 2.6 13.7l7.8 6.1C12.3 13.9 17.6 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.2-.4-4.7H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4 6.9-10 6.9-17.3z"/><path fill="#FBBC05" d="M10.4 28.2c-.5-1.5-.8-3-.8-4.7s.3-3.2.8-4.7l-7.8-6.1C.9 16.1 0 19.9 0 23.5s.9 7.4 2.6 10.8l7.8-6.1z"/><path fill="#34A853" d="M24 47c6.2 0 11.5-2 15.3-5.5l-7.5-5.8c-2.1 1.4-4.8 2.3-7.8 2.3-6.4 0-11.7-4.4-13.6-10.3l-7.8 6.1C6.5 41.6 14.6 47 24 47z"/></svg>
+        Continuar com o Google
+      </button>
+      <button class="visitante" id="b-visitante">Usar sem conta, só neste aparelho</button>
+    </div>
+    <p class="sobre">Estudando junto com alguém? Cada pessoa cria a própria conta e tem o próprio progresso.</p>
+  </div>`;
+  el("t-entrar").onclick=()=>{ modoEntrada="entrar"; msgErro=""; desenharCapa() };
+  el("t-criar").onclick=()=>{ modoEntrada="criar"; msgErro=""; desenharCapa() };
+  el("form-auth").onsubmit=async ev=>{
+    ev.preventDefault();
+    const email=el("i-email").value.trim(), senha=el("i-senha").value;
+    carregandoAuth=true; msgErro=""; desenharCapa();
+    try{
+      if(modoEntrada==="criar"){
+        const cred=await createUserWithEmailAndPassword(auth,email,senha);
+        const nome=(document.getElementById("i-nome")||{}).value;
+        if(nome) try{ await updateProfile(cred.user,{displayName:nome.trim()}) }catch(e){}
+      } else {
+        await signInWithEmailAndPassword(auth,email,senha);
+      }
+    }catch(e){ msgErro=mensagemErro(e.code); carregandoAuth=false; desenharCapa() }
+  };
+  const g=el("b-google"); if(g) g.onclick=async()=>{
+    carregandoAuth=true; msgErro=""; desenharCapa();
+    try{ await signInWithPopup(auth,new GoogleAuthProvider()) }
+    catch(e){ msgErro=mensagemErro(e.code); carregandoAuth=false; desenharCapa() }
+  };
+  const esq=el("b-esqueci"); if(esq) esq.onclick=async()=>{
+    const email=el("i-email").value.trim();
+    if(!email){ msgErro="Escreva seu e-mail no campo acima e clique de novo."; return desenharCapa() }
+    try{ await sendPasswordResetEmail(auth,email); msgErro="Enviamos um link de redefinição para "+email+"."; }
+    catch(e){ msgErro=mensagemErro(e.code) }
+    desenharCapa();
+  };
+  el("b-visitante").onclick=()=>{
+    visitante=true;
+    try{ localStorage.setItem("trilha-oab-visitante","1") }catch(e){}
+    entrarNoApp();
+  };
+}
+function mensagemErro(code){
+  const m={
+    "auth/invalid-email":"Esse e-mail não parece válido.",
+    "auth/missing-password":"Escreva sua senha.",
+    "auth/weak-password":"A senha precisa ter pelo menos 6 caracteres.",
+    "auth/email-already-in-use":"Já existe uma conta com esse e-mail. Use a aba Entrar.",
+    "auth/invalid-credential":"E-mail ou senha incorretos.",
+    "auth/wrong-password":"Senha incorreta.",
+    "auth/user-not-found":"Não encontramos uma conta com esse e-mail.",
+    "auth/too-many-requests":"Muitas tentativas. Espere alguns minutos e tente de novo.",
+    "auth/popup-closed-by-user":"A janela do Google foi fechada antes de concluir.",
+    "auth/popup-blocked":"O navegador bloqueou a janela do Google. Libere os pop-ups e tente de novo.",
+    "auth/unauthorized-domain":"Este endereço ainda não está autorizado no Firebase.",
+    "auth/network-request-failed":"Sem conexão. Verifique a internet e tente de novo."
+  };
+  return m[code]||("Não deu certo ("+(code||"erro")+"). Tente de novo.");
+}
+
+function entrarNoApp(){
+  el("capa").hidden=true;
+  el("app-topo").hidden=false;
+  desenhar();
+}
+
+/* ===================== DESENHO ===================== */
+function atualizarTopo(){
+  el("s-ofensiva").textContent=ofensivaAtual();
+  el("s-xp").textContent=estado.xp;
+  el("s-prova").textContent=diasAte(PROVA);
+  document.querySelectorAll(".aba").forEach(b=>{
+    if(b.dataset.aba===aba&&!emAula) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current");
+  });
+}
+function chipTexto(){
+  if(usuario&&salvoNaConta) return "Salvo na sua conta e neste aparelho";
+  if(usuario&&!salvoNaConta) return "Salvo neste aparelho. A conta não respondeu ("+erroNuvem+")";
+  if(semLocal) return "Sem armazenamento no navegador: use o código de backup";
+  return "Salvo só neste aparelho";
+}
+function atualizarChip(){
+  const c=el("chip-salvo");
+  if(c){ c.textContent="✓ "+chipTexto(); c.className="chip"+((usuario&&salvoNaConta)?" ok":"") }
+}
+function desenhar(){
+  atualizarTopo();
+  if(emAula) return desenharAula();
+  if(aba==="trilha") desenharTrilha();
+  else if(aba==="conquistas") desenharConquistas();
+  else desenharConta();
+  atualizarChip();
+}
+
+function blocoSemana(){
+  const dow=(new Date().getDay()+6)%7, seg=somar(hoje(),-dow), nomes=["S","T","Q","Q","S","S","D"];
+  let out="";
+  for(let i=0;i<7;i++){ const d=somar(seg,i), ok=estado.datas.indexOf(d)>=0;
+    out+=`<div class="dia-s${ok?" ok":""}${d===hoje()?" hj":""}"><span>${ok?"✓":""}</span>${nomes[i]}</div>` }
+  return `<section class="bloco"><div class="rotulo">Sua semana</div><div class="semana">${out}</div></section>`;
+}
+function blocoNivel(){
+  const n=nivel(estado.xp), pct=n.prox?Math.round(100*(estado.xp-n.base)/(n.prox-n.base)):100;
+  return `<section class="bloco"><div class="rotulo">Nível ${n.n}</div>
+    <div class="nivel-linha"><h2>${esc(n.nome)}</h2><span class="num aviso">${n.prox?(estado.xp+" / "+n.prox+" XP"):(estado.xp+" XP")}</span></div>
+    <div class="barra xp"><b style="width:${pct}%"></b></div></section>`;
+}
+function blocoConquistas(limite){
+  const lista=CONQ.slice(0,limite||CONQ.length);
+  const out=lista.map(c=>{ const g=estado.conq.indexOf(c.id)>=0;
+    return `<div class="selo${g?" ganho":""}"><b>${c.e}</b><strong>${esc(c.n)}</strong><small>${esc(c.d)}</small></div>` }).join("");
+  return `<section class="bloco"><div class="rotulo">Conquistas · ${estado.conq.length} de ${CONQ.length}</div><div class="conq">${out}</div></section>`;
+}
+function rotuloDia(item){
+  if(item.tipo==="revisao") return "Revisão da semana";
+  if(item.tipo==="simulado") return "Simulado misto";
+  return item.materia;
+}
+function subtituloDia(item,k){
+  if(estado.feitos[k]) return "Concluído · "+estado.feitos[k].acertos+" de "+estado.feitos[k].total+" de primeira";
+  if(item.tipo==="aula"){ const a=aulaDe(item.materia,item.slot); return a?(a.titulo+" · "+(a.min||15)+" min"):"Conteúdo em preparação" }
+  if(item.tipo==="revisao") return "Refaça as questões da semana";
+  if(item.tipo==="questoes") return "Bloco de questões";
+  return "Questões misturadas, no tempo da prova";
+}
+function podeAbrir(item,k){
+  const i=proximoDia();
+  if(k>i) return false;
+  if(item.tipo==="aula") return temAula(item);
+  return questoesDoDia(k).length>0;
+}
+function desenharTrilha(){
+  const i=proximoDia(), item=TRILHA[i], feitoHoje=estado.ultima===hoje();
+  const andamento=estado.atual&&estado.atual.dia===i;
+  let cartao;
+  if(feitoHoje){
+    cartao=`<section class="hoje feito"><div class="rotulo">Meta de hoje</div><h1>Cumprida. Até amanhã!</h1>
+      <p>Sua ofensiva está em ${ofensivaAtual()} ${ofensivaAtual()===1?"dia":"dias"}. Volte amanhã para não quebrar a sequência.</p></section>`;
+  } else if(podeAbrir(item,i)){
+    const pct=andamento?Math.round(100*progressoAula(estado.atual)):0;
+    const a=item.tipo==="aula"?aulaDe(item.materia,item.slot):null;
+    const titulo=a?a.titulo:rotuloDia(item);
+    const qn=questoesDoDia(i).length;
+    cartao=`<section class="hoje"><div class="rotulo">Dia ${i+1} · ${esc(rotuloDia(item))}</div><h1>${esc(titulo)}</h1>
+      <p>Cerca de ${a?(a.min||15):12} min: ${a?"leitura da lei e ":""}${qn} ${qn===1?"questão":"questões"}. Pode parar e voltar, o ponto fica guardado.</p>
+      ${andamento?`<div class="barra" aria-label="Progresso do dia"><b style="width:${pct}%"></b></div>`:""}
+      <button class="btn claro largo" id="btn-comecar">${andamento?"Continuar de onde parei":"Começar o dia "+(i+1)}</button></section>`;
+  } else {
+    cartao=`<section class="hoje feito"><div class="rotulo">Conteúdo</div><h1>Esta aula ainda está em preparação</h1>
+      <p>O conteúdo das próximas matérias está sendo escrito e conferido em fonte. Os dias já prontos continuam disponíveis na trilha.</p></section>`;
+  }
+  const limite=mostrarTudo?TRILHA.length:Math.min(TRILHA.length,i+12);
+  let nos="";
+  for(let k=0;k<limite;k++){
+    const x=TRILHA[k], ok=!!estado.feitos[k], vez=(k===i), pode=podeAbrir(x,k)||ok;
+    nos+=`<button class="no${ok?" ok":""}${vez?" vez":""}" data-dia="${k}"${pode?"":" disabled"}>
+      <span class="bola">${ok?"✓":(k+1)}</span>
+      <span><h3>${esc(rotuloDia(x))}</h3><p>${esc(subtituloDia(x,k))}</p></span></button>`;
+  }
+  const dataProva=PROVA.split("-").reverse().join("/");
+  app.innerHTML=`<div class="grade duas"><div class="col">${cartao}
+    <section class="bloco"><div class="rotulo">Trilha até a prova · ${nFeitos(estado)} de ${TOTAL_DIAS} dias</div>
+    <div class="trilha">${nos}</div>
+    ${limite<TRILHA.length?`<button class="ver-mais" id="b-mais">Ver a trilha inteira (${TRILHA.length} dias)</button>`:""}
+    <div class="fim-trilha">A trilha vai até ${dataProva}, data prevista da 1ª fase: primeiro ciclo por matéria, revisão aos domingos, questões na reta intermediária e simulados no último mês.</div>
+    </section></div><div class="col">${blocoSemana()}${blocoNivel()}${blocoConquistas(4)}</div></div>`;
+  const b=el("btn-comecar"); if(b) b.onclick=()=>abrirDia(i);
+  const m=el("b-mais"); if(m) m.onclick=()=>{ mostrarTudo=true; desenhar() };
+  app.querySelectorAll(".no:not([disabled])").forEach(n=>n.onclick=()=>abrirDia(+n.dataset.dia));
+}
+function desenharConquistas(){
+  const taxa=estado.respondidas?Math.round(100*estado.acertos/estado.respondidas):0;
+  app.innerHTML=`<div class="grade duas"><div class="col">${blocoNivel()}${blocoConquistas()}</div>
+    <div class="col">${blocoSemana()}
+    <section class="bloco"><div class="rotulo">Seus números</div><div class="numeros">
+      <div class="numero"><b class="num">${nFeitos(estado)}</b><small>dias concluídos</small></div>
+      <div class="numero"><b class="num">${estado.melhor}</b><small>maior ofensiva</small></div>
+      <div class="numero"><b class="num">${estado.respondidas}</b><small>questões respondidas</small></div>
+      <div class="numero"><b class="num">${taxa}%</b><small>acerto de primeira</small></div>
+    </div></section></div></div>`;
+}
+function codigo(){ try{ return btoa(unescape(encodeURIComponent(JSON.stringify(estado)))) }catch(e){ return "" } }
+let msgBackup="", pedindoReinicio=false;
+function desenharConta(){
+  const quem=usuario?(usuario.displayName||usuario.email):"Visitante (sem conta)";
+  app.innerHTML=`<div class="grade duas"><div class="col">
+    <section class="bloco"><div class="rotulo">Sua conta</div>
+      <h2 style="font-size:1.2rem;margin-top:6px">${esc(quem)}</h2>
+      <div class="conta-linha"><span class="chip" id="chip-salvo"></span></div>
+      <p class="aviso" style="margin-top:10px">${usuario
+        ? "Cada resposta é gravada na hora, neste aparelho e na sua conta. Entrando com a mesma conta em outro celular ou computador, o progresso aparece lá."
+        : "Sem conta, o progresso fica apenas neste navegador. Se limpar os dados do navegador ou trocar de aparelho, ele se perde. Crie uma conta ou guarde o código de backup."}</p>
+      <div class="linha-btn">${usuario
+        ? `<button class="btn sec" id="b-sair">Sair da conta</button>`
+        : `<button class="btn" id="b-entrar">Criar conta ou entrar</button>`}</div>
+    </section>
+    <section class="bloco"><div class="rotulo">Código de backup</div>
+      <p class="aviso" style="margin:8px 0">Copie e guarde este código. Ele restaura todo o progresso em qualquer aparelho.</p>
+      <textarea id="ta-backup" readonly aria-label="Código de backup">${esc(codigo())}</textarea>
+      <div class="linha-btn"><button class="btn sec" id="btn-copiar">Copiar código</button></div>
+    </section></div>
+    <div class="col">
+    <section class="bloco"><div class="rotulo">Restaurar de um código</div>
+      <p class="aviso" style="margin:8px 0">Cole aqui um código de backup para trazer o progresso de outro aparelho.</p>
+      <textarea id="ta-restaurar" aria-label="Cole o código de backup" placeholder="Cole o código aqui"></textarea>
+      <div class="linha-btn"><button class="btn sec" id="btn-restaurar">Restaurar</button></div>
+      <p class="aviso" id="msg-backup" role="status" style="margin-top:8px">${esc(msgBackup)}</p>
+    </section>
+    <section class="bloco"><div class="rotulo">Recomeçar</div>
+      <p class="aviso" style="margin:8px 0">Apaga todo o progresso e volta ao dia 1.</p>
+      ${pedindoReinicio
+        ? `<div class="linha-btn"><button class="btn" id="b-sim">Sim, apagar tudo</button><button class="btn sec" id="b-nao">Cancelar</button></div>`
+        : `<div class="linha-btn"><button class="btn sec" id="b-reiniciar">Apagar meu progresso</button></div>`}
+    </section></div></div>`;
+  const sair=el("b-sair"); if(sair) sair.onclick=async()=>{
+    try{ localStorage.removeItem("trilha-oab-visitante") }catch(e){}
+    await signOut(auth); location.reload();
+  };
+  const ent=el("b-entrar"); if(ent) ent.onclick=()=>{
+    try{ localStorage.removeItem("trilha-oab-visitante") }catch(e){}
+    visitante=false; modoEntrada="criar"; msgErro=""; desenharCapa();
+  };
+  el("btn-copiar").onclick=function(){
+    const ta=el("ta-backup"), self=this;
+    const feito=()=>{ self.textContent="Copiado ✓" };
+    try{ navigator.clipboard.writeText(ta.value).then(feito).catch(()=>{ ta.focus(); ta.select(); self.textContent="Selecionado: copie manualmente" }) }
+    catch(e){ ta.focus(); ta.select(); self.textContent="Selecionado: copie manualmente" }
+  };
+  el("btn-restaurar").onclick=()=>{
+    const v=el("ta-restaurar").value.trim();
+    try{ const s=JSON.parse(decodeURIComponent(escape(atob(v)))); if(!valido(s)) throw 0;
+      estado=s; salvar(); msgBackup="Progresso restaurado: "+nFeitos(s)+" dias concluídos e "+s.xp+" XP." }
+    catch(e){ msgBackup="Esse código não é válido. Confira se copiou o código inteiro." }
+    desenhar();
+  };
+  const r=el("b-reiniciar"); if(r) r.onclick=()=>{ pedindoReinicio=true; desenhar() };
+  const s2=el("b-sim"); if(s2) s2.onclick=()=>{ estado=novo(); pedindoReinicio=false; msgBackup=""; mostrarTudo=false; salvar(); desenhar() };
+  const n2=el("b-nao"); if(n2) n2.onclick=()=>{ pedindoReinicio=false; desenhar() };
+  atualizarChip();
+}
+
+/* ===================== AULA / QUESTÕES ===================== */
+let emAula=false, escolha=null, conferida=false, novasConq=[];
+function questoesDoDia(k){
+  const item=TRILHA[k]; if(!item) return [];
+  if(item.tipo==="aula"){ const a=aulaDe(item.materia,item.slot); return a?a.questoes:[] }
+  if(item.tipo==="revisao"){
+    const qs=[];
+    for(let i=1;i<=6;i++){ const ant=TRILHA[k-i]; if(ant&&ant.tipo==="aula"){ const a=aulaDe(ant.materia,ant.slot); if(a) qs.push(...a.questoes) } }
+    return qs.slice(0,10);
+  }
+  if(item.tipo==="questoes"){
+    const todas=((window.CONTEUDO||{})[item.materia]||[]).flatMap(a=>a.questoes);
+    if(!todas.length) return [];
+    const n=item.rodada||1, out=[];
+    for(let i=0;i<Math.min(10,todas.length);i++) out.push(todas[(n*7+i)%todas.length]);
+    return out;
+  }
+  const todas=Object.values(window.CONTEUDO||{}).flat().flatMap(a=>a.questoes);
+  if(!todas.length) return [];
+  const sem=[...todas]; let s=dataDe(TRILHA[k].data).getTime();
+  const rnd=()=>{ s=(s*9301+49297)%233280; return s/233280 };
+  for(let i=sem.length-1;i>0;i--){ const j=Math.floor(rnd()*(i+1)); [sem[i],sem[j]]=[sem[j],sem[i]] }
+  return sem.slice(0,15);
+}
+function progressoAula(a){
+  const qs=questoesDoDia(a.dia), total=(a.temLeitura?1:0)+qs.length;
+  const feitas=(a.leu?1:0)+Object.keys(a.resp).length;
+  return total?Math.min(1,feitas/total):0;
+}
+function abrirDia(k){
+  const item=TRILHA[k]; if(!item) return;
+  const qs=questoesDoDia(k); if(!qs.length) return;
+  if(!estado.atual||estado.atual.dia!==k){
+    const temLeitura=item.tipo==="aula"&&!!aulaDe(item.materia,item.slot);
+    estado.atual={dia:k,temLeitura,leu:!temLeitura,fila:qs.map((_,i)=>i),resp:{},refazer:[],xp:0,fim:false};
+  }
+  emAula=true; escolha=null; conferida=false; salvar(); desenhar(); window.scrollTo(0,0);
+}
+function fecharAula(){ emAula=false; if(estado.atual&&estado.atual.fim) estado.atual=null; salvar(); desenhar(); window.scrollTo(0,0) }
+function fmtQuestao(q,numero){
+  const titulo=numero?`<b>Questão ${numero}</b><br>`:"";
+  const alts=q.a.map((t,j)=>`${"ABCD"[j]}) ${esc(t)}`).join("<br>");
+  return `${titulo}${esc(q.e)}<br><br>${alts}`;
+}
+function desenharAula(){
+  const a=estado.atual, item=TRILHA[a.dia], qs=questoesDoDia(a.dia);
+  const topo=`<div class="aula-topo"><button class="sair" id="btn-sair" aria-label="Sair">✕ Sair</button>
+    <div class="barra" aria-label="Progresso do dia"><b style="width:${Math.round(100*progressoAula(a))}%"></b></div>
+    <span class="pill num">⭐ ${a.xp}</span></div>`;
+  if(a.fim) return desenharFim(topo);
+  if(a.temLeitura&&!a.leu){
+    const aula=aulaDe(item.materia,item.slot);
+    const pts=aula.pontos.map(p=>`<div class="ponto"><mark>${esc(p[0])}</mark> ${esc(p[1])}</div>`).join("");
+    app.innerHTML=`<div class="aula">${topo}
+      <div><div class="rotulo">Dia ${a.dia+1} · ${esc(item.materia)} · leitura</div>
+      <h1 style="font-size:1.6rem;margin-top:4px">${esc(aula.titulo)}</h1></div>
+      <p>Leia os pontos abaixo. Se tiver tempo, abra o texto da lei: <a href="${esc(aula.url)}" target="_blank" rel="noopener">${esc(aula.norma)}</a>.</p>
+      ${pts}
+      <button class="btn largo" id="btn-li">Li. Ir para as questões</button></div>`;
+    el("btn-li").onclick=()=>{ a.leu=true; a.xp+=10; salvar(); desenhar(); window.scrollTo(0,0) };
+  } else {
+    const refazendo=a.fila.length===0;
+    const qi=refazendo?a.refazer[0]:a.fila[0], q=qs[qi];
+    const feitas=qs.length-a.fila.length;
+    const ops=q.a.map((t,j)=>{
+      let cls="opc";
+      if(conferida){ if(j===q.c) cls+=" certa"; else if(j===escolha) cls+=" errada" }
+      return `<button class="${cls}" data-j="${j}" aria-pressed="${escolha===j}"${conferida?" disabled":""}><i>${"ABCD"[j]}</i><span>${esc(t)}</span></button>`;
+    }).join("");
+    let ret="";
+    if(conferida){ const certo=escolha===q.c;
+      ret=`<div class="retorno ${certo?"bom":"ruim"}" role="status"><h3>${certo?"Correto!":"Resposta certa: "+"ABCD"[q.c]}</h3><p>${esc(q.x)}</p></div>` }
+    app.innerHTML=`<div class="aula">${topo}
+      <div class="rotulo">${refazendo?("Revisão dos erros · faltam "+a.refazer.length):("Questão "+(feitas+1)+" de "+qs.length)}</div>
+      <p class="enun">${esc(q.e)}</p><div class="opcoes">${ops}</div>${ret}
+      <button class="btn largo" id="btn-acao"${escolha===null?" disabled":""}>${conferida?"Continuar":"Conferir"}</button></div>`;
+    app.querySelectorAll(".opc").forEach(b=>b.onclick=()=>{ if(conferida) return; escolha=+b.dataset.j; desenhar() });
+    el("btn-acao").onclick=()=>{
+      if(!conferida){
+        conferida=true; const acertou=escolha===q.c;
+        if(!refazendo){
+          a.resp[qi]=acertou; estado.respondidas++;
+          if(acertou){ estado.acertos++; a.xp+=10 } else a.refazer.push(qi);
+        } else if(acertou){ a.xp+=5 }
+        a._ultimo=acertou; salvar(); desenhar();
+      } else {
+        if(!refazendo) a.fila.shift();
+        else { const x=a.refazer.shift(); if(!a._ultimo) a.refazer.push(x) }
+        delete a._ultimo; escolha=null; conferida=false;
+        if(a.fila.length===0&&a.refazer.length===0) concluir();
+        salvar(); desenhar(); window.scrollTo(0,0);
+      }
+    };
+  }
+  el("btn-sair").onclick=fecharAula;
+}
+function concluir(){
+  const a=estado.atual, qs=questoesDoDia(a.dia), total=qs.length;
+  let acertos=0; for(const k in a.resp) if(a.resp[k]) acertos++;
+  a.xp+=20; a.fim=true; a.acertos=acertos; a.total=total;
+  const jaFeito=!!estado.feitos[a.dia];
+  if(!jaFeito){
+    estado.feitos[a.dia]={data:hoje(),acertos,total};
+    estado.xp+=a.xp;
+    if(total&&acertos===total) estado.gabaritou++;
+    const h=hoje();
+    if(estado.ultima!==h){ estado.ofensiva=(estado.ultima===somar(h,-1))?estado.ofensiva+1:1; estado.ultima=h }
+    if(estado.ofensiva>estado.melhor) estado.melhor=estado.ofensiva;
+    if(estado.datas.indexOf(h)<0) estado.datas.push(h);
+  } else { a.xp=0; a.repetida=true }
+  novasConq=[];
+  CONQ.forEach(c=>{ if(estado.conq.indexOf(c.id)<0&&c.ok(estado)){ estado.conq.push(c.id); novasConq.push(c) } });
+  chuva();
+}
+function desenharFim(topo){
+  const a=estado.atual;
+  const selos=novasConq.map(c=>`<div class="selo ganho"><b>${c.e}</b><strong>${esc(c.n)}</strong><small>Nova conquista</small></div>`).join("");
+  app.innerHTML=`<div class="aula">${topo}<div class="festa">
+    <div style="font-size:3rem;line-height:1">🎉</div><h1>Dia ${a.dia+1} concluído!</h1>
+    <p>${a.repetida?"Você refez este dia. O XP só conta na primeira vez.":("Meta de hoje cumprida. Sua ofensiva agora é de "+ofensivaAtual()+" "+(ofensivaAtual()===1?"dia":"dias")+".")}</p>
+    <div class="ganhos">
+      <div class="numero"><b class="num">+${a.xp}</b><small>XP</small></div>
+      <div class="numero"><b class="num">${a.acertos}/${a.total}</b><small>de primeira</small></div>
+      <div class="numero"><b class="num">🔥 ${ofensivaAtual()}</b><small>ofensiva</small></div></div>
+    ${selos?`<div class="conq" style="width:100%">${selos}</div>`:""}
+    <button class="btn largo" id="btn-voltar">Voltar para a trilha</button></div></div>`;
+  el("btn-voltar").onclick=fecharAula;
+  el("btn-sair").onclick=fecharAula;
+}
+function chuva(){
+  if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const cores=["var(--mark)","var(--pen)","var(--card)","var(--ok)"];
+  for(let i=0;i<28;i++){
+    const m=document.createElement("i");
+    m.className="marcador"; m.style.left=(Math.random()*100)+"vw";
+    m.style.background=cores[i%4]; m.style.animationDelay=(Math.random()*0.6)+"s";
+    document.body.appendChild(m); setTimeout(()=>m.remove(),2600);
+  }
+}
+
+/* ===================== INÍCIO ===================== */
+app=el("app");
+document.querySelectorAll(".aba").forEach(b=>b.onclick=()=>{
+  if(emAula){ emAula=false; if(estado.atual&&estado.atual.fim) estado.atual=null }
+  aba=b.dataset.aba; desenhar(); window.scrollTo(0,0);
+});
+if(estado.atual&&estado.atual.fim) estado.atual=null;
+try{ visitante=localStorage.getItem("trilha-oab-visitante")==="1" }catch(e){}
+
+let iniciou=false;
+function iniciarSemConta(aviso){
+  if(iniciou) return; iniciou=true;
+  semFirebaseAviso=aviso||"";
+  if(visitante||aviso==="offline"){ visitante=true; entrarNoApp() }
+  else { carregandoAuth=false; desenharCapa() }
+}
+let semFirebaseAviso="";
+if(temFirebase){
+  try{
+    const fb=initializeApp(firebaseConfig);
+    auth=getAuth(fb); db=getFirestore(fb);
+    // Se o Firebase não responder em 8 segundos, o aplicativo abre assim mesmo.
+    const relogio=setTimeout(()=>iniciarSemConta("lento"),8000);
+    onAuthStateChanged(auth,async u=>{
+      clearTimeout(relogio);
+      usuario=u; iniciou=true;
+      if(u){ await carregarNuvem(); entrarNoApp() }
+      else if(visitante){ entrarNoApp() }
+      else { carregandoAuth=false; desenharCapa() }
+    },()=>iniciarSemConta("lento"));
+  }catch(e){ iniciarSemConta("offline") }
+} else {
+  // Sem conexão com o Firebase, o aplicativo funciona guardando o progresso no aparelho.
+  iniciarSemConta("offline");
+}
+</script>
+</body>
+</html>
