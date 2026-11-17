@@ -414,7 +414,8 @@ function desenharCapa(){
       <form id="form-auth" style="display:flex;flex-direction:column;gap:12px">
         ${modoEntrada==="criar"?`<label for="i-nome">Seu nome<input id="i-nome" autocomplete="name" required></label>`:""}
         <label for="i-email">E-mail<input id="i-email" type="email" autocomplete="email" required></label>
-        <label for="i-senha">Senha<input id="i-senha" type="password" autocomplete="${modoEntrada==="criar"?"new-password":"current-password"}" minlength="6" required></label>
+        <label for="i-senha">Senha<input id="i-senha" type="password" autocomplete="${modoEntrada==="criar"?"new-password":"current-password"}" minlength="${modoEntrada==="criar"?8:6}" required></label>
+        ${modoEntrada==="criar"?`<p class="aviso" style="margin-top:-4px">Pelo menos 8 caracteres, com uma letra maiúscula e um número.</p>`:""}
         <button class="btn largo" type="submit" ${carregandoAuth?"disabled":""}>${carregandoAuth?"Aguarde…":(modoEntrada==="criar"?"Criar minha conta":"Entrar")}</button>
       </form>
       ${modoEntrada==="entrar"?`<button class="visitante" id="b-esqueci">Esqueci minha senha</button>`:""}
@@ -432,6 +433,12 @@ function desenharCapa(){
   el("form-auth").onsubmit=async ev=>{
     ev.preventDefault();
     const email=el("i-email").value.trim(), senha=el("i-senha").value;
+    if(modoEntrada==="criar"){
+      const fraca = senha.length<8 ? "A senha precisa ter pelo menos 8 caracteres."
+        : !/[A-ZÀ-Þ]/.test(senha) ? "A senha precisa ter ao menos uma letra maiúscula."
+        : !/[0-9]/.test(senha) ? "A senha precisa ter ao menos um número." : "";
+      if(fraca){ msgErro=fraca; return desenharCapa() }
+    }
     carregandoAuth=true; msgErro=""; desenharCapa();
     try{
       if(modoEntrada==="criar"){
@@ -465,7 +472,8 @@ function mensagemErro(code){
   const m={
     "auth/invalid-email":"Esse e-mail não parece válido.",
     "auth/missing-password":"Escreva sua senha.",
-    "auth/weak-password":"A senha precisa ter pelo menos 6 caracteres.",
+    "auth/weak-password":"A senha precisa ter pelo menos 8 caracteres, com uma letra maiúscula e um número.",
+    "auth/password-does-not-meet-requirements":"A senha precisa ter pelo menos 8 caracteres, com uma letra maiúscula e um número.",
     "auth/email-already-in-use":"Já existe uma conta com esse e-mail. Use a aba Entrar.",
     "auth/invalid-credential":"E-mail ou senha incorretos.",
     "auth/wrong-password":"Senha incorreta.",
