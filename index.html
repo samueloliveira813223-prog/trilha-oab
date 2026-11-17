@@ -168,6 +168,9 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .festa{text-align:center;display:flex;flex-direction:column;gap:14px;align-items:center;padding-block:12px}
 .festa h1{font-size:clamp(1.8rem,6vw,2.6rem)}
 .ganhos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:100%}
+.placar{width:100%;background:var(--ok-soft);border:1px solid var(--ok);border-radius:14px;padding:14px}
+.placar b{display:block;font-family:var(--display);font-size:2rem;line-height:1.1}
+.placar span{font-size:.88rem;color:var(--muted)}
 .aviso{font-size:.86rem;color:var(--muted)}
 .chip{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;font-weight:700;padding:4px 10px;border-radius:999px;background:var(--surface2);color:var(--muted)}
 .chip.ok{background:var(--ok-soft);color:var(--ok)}
@@ -552,7 +555,10 @@ function desenharTrilha(){
   const andamento=estado.atual&&estado.atual.dia===i;
   let cartao;
   if(feitoHoje){
+    const ult=Object.keys(estado.feitos).map(Number).filter(k=>estado.feitos[k].data===hoje()).sort((x,y)=>y-x)[0];
+    const r=ult!==undefined?estado.feitos[ult]:null;
     cartao=`<section class="hoje feito"><div class="rotulo">Meta de hoje</div><h1>Cumprida. Até amanhã!</h1>
+      ${r?`<p>Você acertou <strong>${r.acertos} de ${r.total}</strong> de primeira no dia ${ult+1}.</p>`:""}
       <p>Sua ofensiva está em ${ofensivaAtual()} ${ofensivaAtual()===1?"dia":"dias"}. Volte amanhã para não quebrar a sequência.</p></section>`;
   } else if(podeAbrir(item,i)){
     const pct=andamento?Math.round(100*progressoAula(estado.atual)):0;
@@ -703,9 +709,11 @@ function fmtQuestao(q,numero){
 }
 function desenharAula(){
   const a=estado.atual, item=TRILHA[a.dia], qs=questoesDoDia(a.dia);
+  const certas=Object.values(a.resp).filter(Boolean).length;
   const topo=`<div class="aula-topo"><button class="sair" id="btn-sair" aria-label="Sair">✕ Sair</button>
     <div class="barra" aria-label="Progresso do dia"><b style="width:${Math.round(100*progressoAula(a))}%"></b></div>
-    <span class="pill num">⭐ ${a.xp}</span></div>`;
+    <span class="pill num" title="Acertos de primeira neste dia">✅ ${certas}/${qs.length}</span>
+    <span class="pill num" title="Pontos de experiência">⭐ ${a.xp}</span></div>`;
   if(a.fim) return desenharFim(topo);
   if(a.temLeitura&&!a.leu){
     const aula=aulaDe(item.materia,item.slot);
@@ -777,9 +785,10 @@ function desenharFim(topo){
   app.innerHTML=`<div class="aula">${topo}<div class="festa">
     <div style="font-size:3rem;line-height:1">🎉</div><h1>Dia ${a.dia+1} concluído!</h1>
     <p>${a.repetida?"Você refez este dia. O XP só conta na primeira vez.":("Meta de hoje cumprida. Sua ofensiva agora é de "+ofensivaAtual()+" "+(ofensivaAtual()===1?"dia":"dias")+".")}</p>
+    <div class="placar"><b class="num">${a.acertos} de ${a.total}</b><span>acertos de primeira ${a.total?"· "+Math.round(100*a.acertos/a.total)+"%":""}</span></div>
     <div class="ganhos">
       <div class="numero"><b class="num">+${a.xp}</b><small>XP</small></div>
-      <div class="numero"><b class="num">${a.acertos}/${a.total}</b><small>de primeira</small></div>
+      <div class="numero"><b class="num">${estado.respondidas?Math.round(100*estado.acertos/estado.respondidas):0}%</b><small>acerto geral</small></div>
       <div class="numero"><b class="num">🔥 ${ofensivaAtual()}</b><small>ofensiva</small></div></div>
     ${selos?`<div class="conq" style="width:100%">${selos}</div>`:""}
     <button class="btn largo" id="btn-voltar">Voltar para a trilha</button></div></div>`;
